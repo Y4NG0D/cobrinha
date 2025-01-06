@@ -4,22 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snake Game</title>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #282c34;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    canvas {
-      background-color: #000;
-      display: block;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <canvas id="gameCanvas" width="400" height="400"></canvas>
@@ -29,16 +14,29 @@
 
     const box = 20;
     const canvasSize = 400;
-
     let snake = [{ x: box * 5, y: box * 5 }];
-    let direction = 'RIGHT';
+    let direction = null;
     let food = {
       x: Math.floor(Math.random() * (canvasSize / box)) * box,
       y: Math.floor(Math.random() * (canvasSize / box)) * box
     };
     let score = 0;
+    let speed = 200;
+    let game;
 
-    document.addEventListener('keydown', changeDirection);
+    document.addEventListener('keydown', startGame);
+
+    function startGame(event) {
+      if (!direction) {
+        if (event.key === 'ArrowUp') direction = 'UP';
+        if (event.key === 'ArrowDown') direction = 'DOWN';
+        if (event.key === 'ArrowLeft') direction = 'LEFT';
+        if (event.key === 'ArrowRight') direction = 'RIGHT';
+        game = setInterval(gameLoop, speed);
+      } else {
+        changeDirection(event);
+      }
+    }
 
     function changeDirection(event) {
       if (event.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
@@ -84,12 +82,16 @@
           x: Math.floor(Math.random() * (canvasSize / box)) * box,
           y: Math.floor(Math.random() * (canvasSize / box)) * box
         };
+
+        if (speed > 50) {
+          clearInterval(game);
+          speed -= 10;
+          game = setInterval(gameLoop, speed);
+        }
       } else {
         snake.pop();
       }
     }
-
-    const game = setInterval(gameLoop, 100);
   </script>
 </body>
 </html>
